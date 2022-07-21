@@ -159,7 +159,9 @@ def check_dynadot_expiring_domains(api_key, ditch_domains):
 
                 expiry_days = int((int(domain_item.find('Expiration').text) / 1000 - int(time.time())) / (60 * 60 * 24))
 
-                if expiry_days < 183:
+                if expiry_days < 0:
+                    errors.append('Dynadot domain {} expired {} days ago'.format(name, -expiry_days))
+                elif expiry_days < 183:
                     errors.append('Dynadot domain {} is expiring in {} days'.format(name, expiry_days))
 
             return (len(errors) == 0, ", ".join(errors))
