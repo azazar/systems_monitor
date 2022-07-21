@@ -130,12 +130,12 @@ def check_http_contains(url, text):
         return (False, 'Failed to check {} ({})'.format(url, e))
 
 
-def check_dynadot_expiring_domains(api_key):
+def check_dynadot_expiring_domains(api_key, ditch_domains):
     """
     Check if Dynadot has expiring domains
     """
     url = 'https://api.dynadot.com/api3.xml?key={}&command=list_domain'.format(api_key)
-    ditch_domains = ['1st-class.faith']
+    ditch_domains = []
     try:
         with urlopen(url) as response:
             if response.code != 200:
@@ -157,7 +157,7 @@ def check_dynadot_expiring_domains(api_key):
                 if name in ditch_domains:
                     continue
 
-                expiry_days = int(int(domain_item.find('Expiration').text) / 1000 - int(time.time())) / (60 * 60 * 24)
+                expiry_days = int((int(domain_item.find('Expiration').text) / 1000 - int(time.time())) / (60 * 60 * 24))
 
                 if expiry_days < 183:
                     errors.append('Dynadot domain {} is expiring in {} days'.format(name, expiry_days))
@@ -172,8 +172,15 @@ conf = json.load(open(conf_path))
 
 check_alert(lambda: ping_check('1.1.1.1'))
 
-if 'dynadotApiKey' in conf:
-    check_alert(lambda: check_dynadot_expiring_domains(conf['dynadotApiKey']))
+if 'dynadot' in conf:
+    dynadot_conf = conf['dynadot']
+
+    if 'apiKey' in dynadot_conf:
+        if 'ditchDomains' in dynadot_conf:
+            ditch = dynadot_conf['ditchDomains']
+        else:
+            ditch = []
+        check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], ditch))
 
 for server in conf['sshServers']:
     check_alert(lambda: check_server(server), server)

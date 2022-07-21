@@ -1,5 +1,10 @@
 {
-    "dynadotApiKey": "xxxyyyzzz",
+    "dynadot": {
+        "apiKey": "xxxyyyzzz",
+        "ditchDomains": [
+            "useless-domain.com"
+        ]
+    },
     "sshServers": [
         "admin@ssh.server.net"
     ],
