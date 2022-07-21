@@ -5,12 +5,19 @@ import os
 import json
 
 
-def get_space_left(partition):
+def find_mount_point(path):
+    path = os.path.abspath(path)
+    while not os.path.ismount(path):
+        path = os.path.dirname(path)
+    return path
+
+
+def get_space_left(file):
     """
     Get space left on partition
     """
 
-    stats = os.statvfs(partition)
+    stats = os.statvfs(file)
     bsize = stats.f_bsize
 
     return (stats.f_bavail * bsize, stats.f_blocks * bsize)
@@ -20,10 +27,12 @@ stats = {}
 
 # Get available space on /home and root
 
-stats['df'] = {
-    '/': get_space_left('/'),
-    os.environ['HOME']: get_space_left(os.environ['HOME']),
-}
+paths = [os.environ['HOME'], '/']
+
+stats['df'] = {}
+for path in paths:
+    mountpoint = find_mount_point(path)
+    stats['df'][mountpoint] = get_space_left(path)
 
 num_cpus = os.cpu_count()
 stats['la'] = [avg / num_cpus for avg in os.getloadavg()]
