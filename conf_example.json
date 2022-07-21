@@ -1,5 +1,5 @@
 {
-    "dynadot_api_key": "xxxyyyzzz",
+    "dynadotApiKey": "xxxyyyzzz",
     "sshServers": [
         "admin@ssh.server.net"
     ],

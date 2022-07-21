@@ -173,8 +173,8 @@ conf = json.load(open(conf_path))
 
 check_alert(lambda: ping_check('1.1.1.1'))
 
-if 'dynadot_api_key' in conf:
-    check_alert(lambda: check_dynadot_expiring_domains(conf['dynadot_api_key']))
+if 'dynadotApiKey' in conf:
+    check_alert(lambda: check_dynadot_expiring_domains(conf['dynadotApiKey']))
 
 for server in conf['sshServers']:
     check_alert(lambda: check_server(server), server)
