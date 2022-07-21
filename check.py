@@ -135,7 +135,6 @@ def check_dynadot_expiring_domains(api_key, ditch_domains):
     Check if Dynadot has expiring domains
     """
     url = 'https://api.dynadot.com/api3.xml?key={}&command=list_domain'.format(api_key)
-    ditch_domains = []
     try:
         with urlopen(url) as response:
             if response.code != 200:
