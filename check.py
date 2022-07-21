@@ -10,15 +10,6 @@ import time
 import xml.etree.ElementTree as ET
 
 
-servers_to_monitor = ['m@b.uo1.net', 'm@n.uo1.net', 'm@bitcoinfaucet.uo1.net']
-ok_https_to_monitor = {
-    'https://bitcoinfaucet.uo1.net/site_status.php': 'm@bitcoinfaucet.uo1.net',
-    'https://fatxxx.tube/test': 'fvs@fvs',
-    'https://freeporntube.tv/test': 'fvs@fvs',
-    'https://indian-porn-tube.mobi/test': 'fvs@fvs',
-}
-
-
 def alert(message, ssh_userhost=None):
     """
     Send alert to server
@@ -177,17 +168,21 @@ def check_dynadot_expiring_domains(api_key):
         return (False, 'Failed to check {} ({})'.format(url, e))
 
 
+conf_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'conf.json')
+conf = json.load(open(conf_path))
+
 check_alert(lambda: ping_check('1.1.1.1'))
 
-if len(sys.argv) >= 2:
-    check_alert(lambda: check_dynadot_expiring_domains(sys.argv[1]))
+if 'dynadot_api_key' in conf:
+    check_alert(lambda: check_dynadot_expiring_domains(conf['dynadot_api_key']))
 
-for server in servers_to_monitor:
+for server in conf['sshServers']:
     check_alert(lambda: check_server(server), server)
 
-for url in ok_https_to_monitor:
-    check_alert(lambda: check_http_ok(url), ok_https_to_monitor[url])
+for url, ssh_userhost in conf['httpExpectOk'].items():
+    check_alert(lambda: check_http_ok(url), ssh_userhost)
 
-check_alert(lambda: check_http_contains('https://fbsearch.ru/', '<title>FBSearch - настоящий книжный поисковик</title>'), 'm@fbsearch')
+for url, text in conf['httpFind'].items():
+    check_alert(lambda: check_http_contains(url, text))
 
 print('<txt><span foreground="#00FF77">✓</span></txt>')

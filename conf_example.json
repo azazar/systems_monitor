@@ -1,0 +1,12 @@
+{
+    "dynadot_api_key": "xxxyyyzzz",
+    "sshServers": [
+        "admin@ssh.server.net"
+    ],
+    "httpExpectOk": {
+        "https://www.server.net": "admin@ssh.server.net",
+    },
+    "httpFind": {
+        "https://www.server2.net": "</html>"
+    }
+}
