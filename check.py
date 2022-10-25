@@ -49,7 +49,8 @@ def check_server(ssh_userhost):
     Check if server is up and running using OpenSSH client
     """
     host = ssh_userhost.split('@')[1]
-    ssh_cmd = 'ssh -q -o BatchMode=yes {} python3 - < {}/print_stats.py'.format(ssh_userhost, os.path.dirname(os.path.realpath(__file__)))
+    print_stats_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'print_stats.py')
+    ssh_cmd = 'ssh -q -o BatchMode=yes {} python3 - < {}'.format(ssh_userhost, print_stats_path)
 
     (exitcode, output) = subprocess.getstatusoutput(ssh_cmd)
 
@@ -168,9 +169,15 @@ def check_dynadot_expiring_domains(api_key, ditch_domains):
         return (False, 'Failed to check {} ({})'.format(url, e))
 
 
+def log(msg):
+    with open('/tmp/check.log', 'a') as f:
+        f.write("{}\n".format(msg))
+
+
 conf_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'conf.json')
 conf = json.load(open(conf_path))
 
+log("ping_check('1.1.1.1')")
 check_alert(lambda: ping_check('1.1.1.1'))
 
 if 'dynadot' in conf:
@@ -181,15 +188,19 @@ if 'dynadot' in conf:
             ditch = dynadot_conf['ditchDomains']
         else:
             ditch = []
+        log('Check dynadot')
         check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], ditch))
 
 for server in conf['sshServers']:
+    log('Check ssh: ' + server)
     check_alert(lambda: check_server(server), server)
 
 for url, ssh_userhost in conf['httpExpectOk'].items():
+    log('Check http 1: ' + url)
     check_alert(lambda: check_http_ok(url), ssh_userhost)
 
 for url, text in conf['httpFind'].items():
+    log('Check http 2: ' + url)
     check_alert(lambda: check_http_contains(url, text))
 
 print('<txt><span foreground="#00FF77">✓</span></txt>')
