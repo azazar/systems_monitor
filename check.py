@@ -49,7 +49,7 @@ def check_server(ssh_userhost):
     Check if server is up and running using OpenSSH client
     """
     host = ssh_userhost.split('@')[1]
-    ssh_cmd = 'ssh {} python3 - < {}/print_stats.py'.format(ssh_userhost, os.path.dirname(os.path.realpath(__file__)))
+    ssh_cmd = 'ssh -q -o BatchMode=yes {} python3 - < {}/print_stats.py'.format(ssh_userhost, os.path.dirname(os.path.realpath(__file__)))
 
     (exitcode, output) = subprocess.getstatusoutput(ssh_cmd)
 
@@ -160,7 +160,7 @@ def check_dynadot_expiring_domains(api_key, ditch_domains):
 
                 if expiry_days < 0:
                     errors.append('Dynadot domain {} expired {} days ago'.format(name, -expiry_days))
-                elif expiry_days < 183:
+                elif expiry_days < 60:
                     errors.append('Dynadot domain {} is expiring in {} days'.format(name, expiry_days))
 
             return (len(errors) == 0, ", ".join(errors))
