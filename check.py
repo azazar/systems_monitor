@@ -50,7 +50,13 @@ def check_server(ssh_userhost):
     """
     host = ssh_userhost.split('@')[1]
     print_stats_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'print_stats.py')
-    ssh_cmd = 'ssh -q -o BatchMode=yes {} python3 - < {}'.format(ssh_userhost, print_stats_path)
+
+    if 'sshCmd' in conf:
+        ssh_cmd = conf['sshCmd']
+    else:
+        ssh_cmd = 'timeout 5s ssh -q -o BatchMode=yes'
+
+    ssh_cmd = ssh_cmd + ' {} python3 - < {}'.format(ssh_userhost, print_stats_path)
 
     (exitcode, output) = subprocess.getstatusoutput(ssh_cmd)
 
