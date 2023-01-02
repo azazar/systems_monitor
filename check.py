@@ -14,9 +14,6 @@ def alert(message, ssh_userhost=None):
     Send alert to server
     """
 
-    if ssh_userhost is not None:
-        message = '{}<click>autoterm -e ssh {}</click>'.format(message, ssh_userhost)
-
     print('<txt><span foreground="#FF7777">{}</span></txt>'.format(message))
     exit(0)
 
