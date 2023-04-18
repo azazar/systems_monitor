@@ -134,7 +134,7 @@ def check_http_contains(url, text):
         return (False, 'Failed to check {} ({})'.format(url, e))
 
 
-def check_dynadot_expiring_domains(api_key, ditch_domains):
+def check_dynadot_expiring_domains(api_key, ditch_domains, warn_days=60):
     """
     Check if Dynadot has expiring domains
     """
@@ -164,7 +164,7 @@ def check_dynadot_expiring_domains(api_key, ditch_domains):
 
                 if expiry_days < 0:
                     errors.append('Dynadot domain {} expired {} days ago'.format(name, -expiry_days))
-                elif expiry_days < 60:
+                elif expiry_days < warn_days:
                     errors.append('Dynadot domain {} is expiring in {} days'.format(name, expiry_days))
 
             return (len(errors) == 0, ", ".join(errors))
@@ -186,7 +186,7 @@ if 'dynadot' in conf:
         else:
             ditch = []
 
-        check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], ditch))
+        check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], ditch, dynadot_conf['warnDays']]))
 
 for server in conf['sshServers']:
     check_alert(lambda: check_server(server), server)

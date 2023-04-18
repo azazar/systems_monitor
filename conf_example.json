@@ -3,7 +3,8 @@
         "apiKey": "xxxyyyzzz",
         "ditchDomains": [
             "useless-domain.com"
-        ]
+        ],
+        "warnDays": 60
     },
     "sshServers": [
         "admin@ssh.server.net"
