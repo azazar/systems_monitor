@@ -186,7 +186,7 @@ if 'dynadot' in conf:
         else:
             ditch = []
 
-        check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], ditch, dynadot_conf['warnDays']]))
+        check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], ditch, dynadot_conf['warnDays']))
 
 for server in conf['sshServers']:
     check_alert(lambda: check_server(server), server)
