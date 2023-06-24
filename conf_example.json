@@ -1,9 +1,6 @@
 {
     "dynadot": {
         "apiKey": "xxxyyyzzz",
-        "ditchDomains": [
-            "useless-domain.com"
-        ],
         "warnDays": 60
     },
     "sshServers": [

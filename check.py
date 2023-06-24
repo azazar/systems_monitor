@@ -134,7 +134,7 @@ def check_http_contains(url, text):
         return (False, 'Failed to check {} ({})'.format(url, e))
 
 
-def check_dynadot_expiring_domains(api_key, ditch_domains, warn_days=60):
+def check_dynadot_expiring_domains(api_key, warn_days=60):
     """
     Check if Dynadot has expiring domains
     """
@@ -155,10 +155,12 @@ def check_dynadot_expiring_domains(api_key, ditch_domains, warn_days=60):
             domain_items = root.findall('ListDomainInfoContent/DomainInfoList/DomainInfo/Domain')
 
             for domain_item in domain_items:
-                name = domain_item.find('Name').text
+                renew = domain_item.find('RenewOption').text
 
-                if name in ditch_domains:
+                if renew != 'auto-renew':
                     continue
+
+                name = domain_item.find('Name').text
 
                 expiry_days = int((int(domain_item.find('Expiration').text) / 1000 - int(time.time())) / (60 * 60 * 24))
 
@@ -181,12 +183,7 @@ if 'dynadot' in conf:
     dynadot_conf = conf['dynadot']
 
     if 'apiKey' in dynadot_conf:
-        if 'ditchDomains' in dynadot_conf:
-            ditch = dynadot_conf['ditchDomains']
-        else:
-            ditch = []
-
-        check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], ditch, dynadot_conf['warnDays']))
+        check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], dynadot_conf['warnDays']))
 
 for server in conf['sshServers']:
     check_alert(lambda: check_server(server), server)
