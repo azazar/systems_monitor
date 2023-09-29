@@ -69,7 +69,7 @@ def check_server(ssh_userhost):
     for partition in status['df']:
         kbytes_avail = status['df'][partition][0]
         kbytes_total = status['df'][partition][1]
-        if kbytes_avail < 1024*1024*1024 or kbytes_avail < kbytes_total * 0.1:
+        if kbytes_avail < 512*1024*1024 or kbytes_avail < kbytes_total * 0.1:
             errors.append('{} {} has just {:.2f} GiB left'.format(host, partition, status['df'][partition][0] / 1024 / 1024 / 1024))
 
     if status['la'][2] > 0.5:
@@ -78,7 +78,7 @@ def check_server(ssh_userhost):
     if status['avail_mem'] < 0.1:
         errors.append('{} free memory is {:.2f}%'.format(host, status['avail_mem'] * 100))
 
-    if status['free_swap'] < 0.5:
+    if status['free_swap'] < 0.25:
         errors.append('{} free swap is {:.2f}%'.format(host, status['free_swap'] * 100))
 
     return (len(errors) == 0, ", ".join(errors))
