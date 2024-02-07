@@ -78,7 +78,7 @@ def check_server(ssh_userhost):
     if status['avail_mem'] < 0.1:
         errors.append('{} free memory is {:.2f}%'.format(host, status['avail_mem'] * 100))
 
-    if status['free_swap'] < 0.25:
+    if status['free_swap'] < 0.1:
         errors.append('{} free swap is {:.2f}%'.format(host, status['free_swap'] * 100))
 
     return (len(errors) == 0, ", ".join(errors))
