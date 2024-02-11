@@ -69,7 +69,7 @@ def check_server(ssh_userhost):
     for partition in status['df']:
         kbytes_avail = status['df'][partition][0]
         kbytes_total = status['df'][partition][1]
-        if kbytes_avail < 512*1024*1024 or kbytes_avail < kbytes_total * 0.1:
+        if kbytes_avail < max(kbytes_total * 0.05, 512*1024*1024):
             errors.append('{} {} has just {:.2f} GiB left'.format(host, partition, status['df'][partition][0] / 1024 / 1024 / 1024))
 
     if status['la'][2] > 0.5:
