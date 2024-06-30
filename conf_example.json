@@ -3,13 +3,13 @@
         "apiKey": "xxxyyyzzz",
         "warnDays": 60
     },
-    "sshServers": [
-        "admin@ssh.server.net"
-    ],
     "httpExpectOk": {
         "https://www.server.net": "admin@ssh.server.net"
     },
     "httpFind": {
         "https://www.server2.net": "</html>"
-    }
+    },
+    "sshServers": [
+        "admin@ssh.server.net"
+    ]
 }

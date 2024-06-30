@@ -185,13 +185,13 @@ if 'dynadot' in conf:
     if 'apiKey' in dynadot_conf:
         check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], dynadot_conf['warnDays']))
 
-for server in conf['sshServers']:
-    check_alert(lambda: check_server(server), server)
-
 for url, ssh_userhost in conf['httpExpectOk'].items():
     check_alert(lambda: check_http_ok(url), ssh_userhost)
 
 for url, text in conf['httpFind'].items():
     check_alert(lambda: check_http_contains(url, text))
+
+for server in conf['sshServers']:
+    check_alert(lambda: check_server(server), server)
 
 print('<txt><span foreground="#00FF77">✓</span></txt>')
