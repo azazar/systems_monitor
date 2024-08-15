@@ -11,5 +11,8 @@
     },
     "sshServers": [
         "admin@ssh.server.net"
+    ],
+    "customCommands": [
+        "false"
     ]
 }

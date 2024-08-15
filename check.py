@@ -7,6 +7,7 @@ import json
 import urllib.request
 import time
 import xml.etree.ElementTree as ET
+import shlex
 
 
 def alert(message, ssh_userhost=None):
@@ -174,7 +175,31 @@ def check_dynadot_expiring_domains(api_key, warn_days=60):
         return (False, 'Failed to check {} ({})'.format(url, e))
 
 
-conf_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'conf.json')
+def check_custom_command(command, cwd):
+    """
+    Check if a custom command returns the expected return code
+    """
+    try:
+        result = subprocess.run([os.environ['SHELL'], '-c', command], cwd=cwd, capture_output=True, text=True)
+
+        if result.returncode != 0:
+            err = str(result.stderr).strip()
+
+            if err == '':
+                err = str(result.stdout).strip()
+
+                if err == '':
+                    err = f"'{command}' returned {result.returncode}"
+
+            return (False, err)
+
+        return (True, None)
+    except Exception as e:
+        return (False, f"Failed to execute command '{command}': {str(e)}")
+
+
+base_dir = os.path.dirname(os.path.realpath(__file__))
+conf_path = os.path.join(base_dir, 'conf.json')
 conf = json.load(open(conf_path))
 
 check_alert(lambda: ping_check('1.1.1.1'))
@@ -193,5 +218,8 @@ for url, text in conf['httpFind'].items():
 
 for server in conf['sshServers']:
     check_alert(lambda: check_server(server), server)
+
+for cmd in conf['customCommands']:
+    check_alert(lambda: check_custom_command(cmd, base_dir))
 
 print('<txt><span foreground="#00FF77">✓</span></txt>')
