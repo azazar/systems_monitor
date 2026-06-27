@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 import shlex
 
 
-def alert(message, ssh_userhost=None):
+def alert(message, destination=None):
     """
     Send alert to server
     """
@@ -19,14 +19,14 @@ def alert(message, ssh_userhost=None):
     exit(0)
 
 
-def check_alert(check_func, ssh_userhost=None):
+def check_alert(check_func, destination=None):
     """
     Check if alert is needed
     """
     (is_ok, errors) = check_func()
 
     if not is_ok:
-        alert(errors, ssh_userhost)
+        alert(errors, destination)
 
 
 def ping_check(host):
@@ -42,11 +42,11 @@ def ping_check(host):
     return (True, None)
 
 
-def check_server(ssh_userhost):
+def check_server(destination):
     """
     Check if server is up and running using OpenSSH client
     """
-    host = ssh_userhost.split('@')[1]
+    host = destination.split('@')[1] if '@' in destination else destination
     print_stats_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'print_stats.py')
 
     if 'sshCmd' in conf:
@@ -54,7 +54,7 @@ def check_server(ssh_userhost):
     else:
         ssh_cmd = 'timeout 5s ssh -q -o BatchMode=yes'
 
-    ssh_cmd = ssh_cmd + ' {} python3 - < {}'.format(ssh_userhost, print_stats_path)
+    ssh_cmd = ssh_cmd + ' {} python3 - < {}'.format(destination, print_stats_path)
 
     (exitcode, output) = subprocess.getstatusoutput(ssh_cmd)
 
@@ -210,8 +210,8 @@ if 'dynadot' in conf:
     if 'apiKey' in dynadot_conf:
         check_alert(lambda: check_dynadot_expiring_domains(dynadot_conf['apiKey'], dynadot_conf['warnDays']))
 
-for url, ssh_userhost in conf['httpExpectOk'].items():
-    check_alert(lambda: check_http_ok(url), ssh_userhost)
+for url, destination in conf['httpExpectOk'].items():
+    check_alert(lambda: check_http_ok(url), destination)
 
 for url, text in conf['httpFind'].items():
     check_alert(lambda: check_http_contains(url, text))
