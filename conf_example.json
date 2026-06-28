@@ -12,6 +12,7 @@
     "sshServers": [
         "admin@ssh.server.net"
     ],
+    "minSwapTotalKb": 2097152,
     "customCommands": [
         "false"
     ]

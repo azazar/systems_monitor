@@ -79,7 +79,7 @@ def check_server(destination):
     if status['avail_mem'] < 0.1:
         errors.append('{} free memory is {:.2f}%'.format(host, status['avail_mem'] * 100))
 
-    if status['free_swap'] < 0.1:
+    if status.get('swap_total', 0) >= conf.get('minSwapTotalKb', 2 * 1024 * 1024) and status['free_swap'] < 0.1:
         errors.append('{} free swap is {:.2f}%'.format(host, status['free_swap'] * 100))
 
     return (len(errors) == 0, ", ".join(errors))

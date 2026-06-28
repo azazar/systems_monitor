@@ -39,6 +39,9 @@ stats['la'] = [avg / num_cpus for avg in os.getloadavg()]
 
 free = os.popen('free').read().split('\n')[1:]
 stats['avail_mem'] = int(free[0].split()[6]) / int(free[0].split()[1])
-stats['free_swap'] = int(free[1].split()[3]) / int(free[1].split()[1])
+swap = free[1].split()
+swap_total = int(swap[1])
+stats['swap_total'] = swap_total
+stats['free_swap'] = int(swap[3]) / swap_total if swap_total > 0 else None
 
 print(json.dumps(stats))
